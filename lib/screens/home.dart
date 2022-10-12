@@ -1,7 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/get_navigation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class HomeScreen extends StatelessWidget {
+import '../controllers/input_data_controller.dart';
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String _url = '';
+  final TextEditingController urlController = TextEditingController();
+  final InputDataController dataController = Get.put(InputDataController());
+
+  @override
+  void dispose() {
+    urlController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUrl();
+  }
+
+  _loadUrl() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _url = (prefs.getString('URL') ?? '');
+      urlController.text = _url.toString();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,12 +51,18 @@ class HomeScreen extends StatelessWidget {
               child: Text('Set valid API base URL in order to continue'),
             ),
             TextFormField(
+              controller: urlController,
               decoration: const InputDecoration(
                   labelText: 'Please enter URL', suffixIcon: Icon(Icons.api)),
             ),
             const Spacer(),
             TextButton(
-                onPressed: () {},
+                onPressed: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setString('URL', urlController.text.trim());
+                  dataController.fetchData();
+                  Get.toNamed('/process');
+                },
             style:  ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(Colors.blue)
             ),

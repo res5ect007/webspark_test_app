@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:webspark_test_app/screens/home.dart';
-import 'package:webspark_test_app/screens/previev.dart';
+import 'package:webspark_test_app/screens/preview.dart';
 import 'package:webspark_test_app/screens/process.dart';
 import 'package:webspark_test_app/screens/result.dart';
 
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
         initialRoute: '/home',
         debugShowCheckedModeBanner: false,
+        defaultTransition: Transition.cupertino,
         theme: ThemeData(
           brightness: Brightness.light,
           useMaterial3: true,
@@ -36,7 +38,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         getPages: [
-          GetPage(name: '/home', page: () => HomeScreen()),
+          GetPage(name: '/home', page: () => const HomeScreen()),
           GetPage(name: '/process', page: () => ProcessScreen()),
           GetPage(name: '/result', page: () => ResultScreen()),
           GetPage(name: '/preview', page: () => PreviewScreen()),
