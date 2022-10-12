@@ -1,12 +1,3 @@
-
-import 'dart:convert';
-
-// inputDataFromJson(String str) {
-//   InputData = InputData.fromJson(str as String);
-// }
-
-List<InputData> inputDataFromJson(String str) => List<InputData>.from(json.decode(str).map((x) => InputData.fromJson(x)));
-
 class InputData {
   static var obs;
 
