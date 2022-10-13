@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/input_data_controller.dart';
+import '../controllers/data_controller.dart';
 
 class ProcessScreen extends StatefulWidget {
   const ProcessScreen({Key? key}) : super(key: key);
@@ -10,7 +10,7 @@ class ProcessScreen extends StatefulWidget {
 }
 
 class _ProcessScreenState extends State<ProcessScreen> {
-  final InputDataController dataController = Get.put(InputDataController());
+  final DataController dataController = Get.put(DataController());
 
   @override
   Widget build(BuildContext context) {
@@ -25,23 +25,24 @@ class _ProcessScreenState extends State<ProcessScreen> {
         return Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
+            //crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const SizedBox(),
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: Column(
-                  children: [
+                  //crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [ dataController.isLoading.isTrue ? const Text(
+                      'Data is calculating...', style: TextStyle(fontSize: 20)) :
                     const Text(
                         'All calculations has finished, you can send your results to server',
                         style: TextStyle(fontSize: 17)),
                     Padding(
                       padding: const EdgeInsets.only(top: 10, bottom: 10),
-                      child:
-                      dataController.isLoading.isTrue ? const Text(
-                          '50%', style: TextStyle(fontSize: 20)) :
-                      const Text('100%', style: TextStyle(fontSize: 20)),
-
+                      child: Text('${dataController.loadingPercent.value}%', style: const TextStyle(fontSize: 20)),
                     )
                   ],
                 ),
@@ -49,8 +50,11 @@ class _ProcessScreenState extends State<ProcessScreen> {
               // const Spacer(),
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
-                child: TextButton(
-                  onPressed: dataController.isLoading.isTrue ? null : () {
+                child:
+                dataController.isLoading.isTrue ? const SizedBox() :
+                TextButton(
+                  onPressed: dataController.isSending.isTrue ? null : () {
+                    //dataController.sendData();
                     Get.toNamed('/result');
                   },
                   style: ButtonStyle(

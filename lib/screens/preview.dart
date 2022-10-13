@@ -1,12 +1,12 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/input_data_controller.dart';
+import '../controllers/data_controller.dart';
 import '../widgets/point_widget.dart';
 
 class PreviewScreen extends StatelessWidget {
   PreviewScreen({Key? key}) : super(key: key);
-  final InputDataController dataController = Get.put(InputDataController());
+  final DataController dataController = Get.put(DataController());
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +27,7 @@ class PreviewScreen extends StatelessWidget {
             dataController.exclusionDataList[dataController.selectedDataList],
             dataController.startDataPoints[dataController.selectedDataList],
             dataController.endDataPoints[dataController.selectedDataList],
+              dataController.bestWayList[dataController.selectedDataList]
           );
         },
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(

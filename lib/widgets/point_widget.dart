@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-Widget pointWidget(double point, List exclusionDataList, List startPoint, List endPoint) {
-  Color pointBackgroundColor = getPointBackgroundColor(point, exclusionDataList, startPoint, endPoint);
-  Color pointFontColor = getPointFontColor(point, exclusionDataList, startPoint, endPoint);
+Widget pointWidget(point, exclusionDataList, startPoint, endPoint, bestWayList) {
+  Color pointBackgroundColor = getPointBackgroundColor(point, exclusionDataList, startPoint, endPoint, bestWayList);
+  Color pointFontColor = getPointFontColor(point, exclusionDataList, startPoint, endPoint, bestWayList);
   return Container(
     alignment: Alignment.center,
     decoration: BoxDecoration(
@@ -17,21 +17,24 @@ Widget pointWidget(double point, List exclusionDataList, List startPoint, List e
   );
 }
 
-getPointFontColor(point, exclusionDataList, startPoint, endPoint) {
-  if (exclusionDataList.contains(point)) {
+getPointFontColor(point, exclusionDataList, startPoint, endPoint, bestWayList) {
+  if (exclusionDataList.contains(point) |
+      bestWayList.contains(point.toString())) {
     return hexToColor('#FFFFFF');
   } else {
     return hexToColor('#000000');
   }
 }
 
-getPointBackgroundColor(point, exclusionDataList, startPoint, endPoint) {
+getPointBackgroundColor(point, exclusionDataList, startPoint, endPoint, bestWayList) {
   if (exclusionDataList.contains(point)) {
    return hexToColor('#000000');
   } else if (startPoint.contains(point)) {
     return hexToColor('#64FFDA');
   } else if (endPoint.contains(point)) {
     return hexToColor('#009688');
+  } else if (bestWayList.contains(point.toString())) {
+    return hexToColor('#4CAF50');
   } else {
     return hexToColor('#FFFFFF');
   }

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../controllers/input_data_controller.dart';
+import '../controllers/data_controller.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -16,7 +13,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String _url = '';
   final TextEditingController urlController = TextEditingController();
-  final InputDataController dataController = Get.put(InputDataController());
+  final DataController dataController = Get.put(DataController());
 
   @override
   void dispose() {

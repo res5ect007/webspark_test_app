@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/input_data_controller.dart';
+import '../controllers/data_controller.dart';
 import '../widgets/data_widget.dart';
 
 class ResultScreen extends StatelessWidget {
   ResultScreen({Key? key}) : super(key: key);
 
-  final InputDataController dataController = Get.put(InputDataController());
+  final DataController dataController = Get.put(DataController());
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class ResultScreen extends StatelessWidget {
                 dataController.selectedDataList = index;
                 Get.toNamed('/preview');
               },
-              child: dataWidget(dataController.dataList[index]));
+              child: dataWidget(dataController.bestWayList[index]));
         },
         separatorBuilder: (BuildContext context, int index) => const Divider(thickness: 1),
       ),

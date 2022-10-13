@@ -9,6 +9,12 @@ import 'package:webspark_test_app/screens/process.dart';
 import 'package:webspark_test_app/screens/result.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((value) => runApp(const MyApp()));
   runApp(const MyApp());
 }
 
@@ -39,7 +45,7 @@ class MyApp extends StatelessWidget {
         ),
         getPages: [
           GetPage(name: '/home', page: () => const HomeScreen()),
-          GetPage(name: '/process', page: () => ProcessScreen()),
+          GetPage(name: '/process', page: () => const ProcessScreen()),
           GetPage(name: '/result', page: () => ResultScreen()),
           GetPage(name: '/preview', page: () => PreviewScreen()),
         ]);

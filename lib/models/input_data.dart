@@ -1,5 +1,4 @@
 class InputData {
-  static var obs;
 
   InputData({
     required this.error,
@@ -17,13 +16,6 @@ class InputData {
     data = List.from(json['data']).map((e) => Data.fromJson(e)).toList();
   }
 
-  Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['error'] = error;
-    _data['message'] = message;
-    _data['data'] = data.map((e) => e.toJson()).toList();
-    return _data;
-  }
 }
 
 class Data {
@@ -46,14 +38,6 @@ class Data {
     end = End.fromJson(json['end']);
   }
 
-  Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['id'] = id;
-    _data['field'] = field;
-    _data['start'] = start.toJson();
-    _data['end'] = end.toJson();
-    return _data;
-  }
 }
 
 class Start {
@@ -70,12 +54,6 @@ class Start {
     y = json['y'];
   }
 
-  Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['x'] = x;
-    _data['y'] = y;
-    return _data;
-  }
 }
 
 class End {
@@ -90,12 +68,5 @@ class End {
   End.fromJson(Map<String, dynamic> json) {
     x = json['x'];
     y = json['y'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['x'] = x;
-    _data['y'] = y;
-    return _data;
   }
 }

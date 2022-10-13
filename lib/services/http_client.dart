@@ -22,6 +22,22 @@ class HttpClient {
     }
   }
 
+  //POST
+  Future<dynamic> post(String baseUrl, outputData) async {
+    var uri = Uri.parse(baseUrl);
+
+    try {
+      var response = await http.post(uri, headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },body: outputData).timeout(const Duration(seconds: TIME_OUT_DURATION));
+      return _processResponse(response);
+    } on SocketException { //No Internet
+      throw FetchDataException('No Internet connection', uri.toString());
+    } on TimeoutException { //Time out
+      throw ApiNotRespondingException(
+          'API not responded in time', uri.toString());
+    }
+  }
   dynamic _processResponse(http.Response response) {
     switch (response.statusCode) {
       case 200: //OK
