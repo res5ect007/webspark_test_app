@@ -34,6 +34,7 @@ class _ProcessScreenState extends State<ProcessScreen> {
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: Column(
                   //crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   children: [ dataController.isLoading.isTrue ? const Text(
                       'Data is calculating...', style: TextStyle(fontSize: 20)) :

@@ -105,7 +105,7 @@ class DataController extends GetxController with ErrorController {
       // List currentWayAvailablePointList = [];
       // currentWayAvailablePointList.addAll(availablePointList);
 
-      List<double> wayList = [0.1, 0.9, 1, 1.1, -0.1, -0.9, -1, -1.1];
+      List<double> wayList = [0.9,  1.1, -1, -0.9,  -1.1, 0.1, 1, -0.1,];
 
       String bestWay = '';
       Map step = <String, int>{};
