@@ -51,10 +51,8 @@ class DataController extends GetxController with ErrorController {
   }
 
   Future<void> structureData(InputData inputData) async {
-    var dataSize = inputData.data.length;
-    //OutputData outputData = OutputData(result: <String, dynamic>{}, id: '');
-
-
+    int dataSize = inputData.data.length;
+    List outputData = [];
 
     for (int i = 0; i < dataSize; i++) {
 
@@ -110,8 +108,9 @@ class DataController extends GetxController with ErrorController {
       List<double> wayList = [0.1, 0.9, 1, 1.1, -0.1, -0.9, -1, -1.1];
 
       String bestWay = '';
-      var step = <String, int>{};
-      var steps = [];
+      Map step = <String, int>{};
+      List steps = [];
+      List result = [];
       bestWay = getWayFormated(currentStartPoint, bestWay);
       //List bestWayList = [];
 
@@ -125,12 +124,15 @@ class DataController extends GetxController with ErrorController {
             availablePointList.remove(stepPoint);
             bestWay = bestWay + getWayFormated(stepPoint, bestWay);
 
-            dynamic stepPointX = stepPoint.toString().substring(1, 1);
-            dynamic stepPointY = stepPoint.toString().substring(3, 3);
-            step = {'x': stepPointX.parseInt(), 'y': stepPointY.parseInt()};
+            dynamic stepPointX = int.parse(stepPoint.toString().substring(0, 1));
+            dynamic stepPointY = int.parse(stepPoint.toString().substring(2, 3));
+            step = {'x': stepPointX, 'y': stepPointY};
+            steps.add(step);
 
             if (currentEndPoint == stepPoint) {
               //bestWayList.add(bestWay);
+              result.add({'steps': steps});
+              result.add({'path': bestWay});
               availablePointList.clear();
             } else {
               findBestResult(wayList, stepPoint, currentEndPoint);
@@ -142,6 +144,9 @@ class DataController extends GetxController with ErrorController {
       findBestResult(wayList, currentStartPoint, currentEndPoint);
       bestWayList.add(bestWay);
       loadingPercent.value = '75';
+
+      outputData.add({
+          'id': inputData.data[i].id, 'result': result});
     }
 
   }
