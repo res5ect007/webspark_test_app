@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/input_data.dart';
@@ -10,10 +11,11 @@ class DataController extends GetxController with ErrorController {
   String _url = '';
   late HttpClient _httpClient;
   late InputData inputData;
-  late OutputData outputData;
+  late List<OutputData> outputData = [];
   late List<List<Point>> dataBestWay;
+  late  List<List<Point>> previewList = [];
   var isLoading = false.obs;
-  var loadingPercent = ''.obs;
+  var loadingPercent = 0.0.obs;
   var isSending = false.obs;
   late int selectedDataList = 0.obs as int;
 
@@ -21,15 +23,12 @@ class DataController extends GetxController with ErrorController {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _url = (prefs.getString('URL') ?? '');
     isLoading(true);
-    loadingPercent.value = '10';
+    loadingPercent.value = 0.0;
 
     _httpClient = HttpClient();
     await _httpClient.get(_url).then((value) {
       inputData = InputData.fromJson(jsonDecode(value));
-      loadingPercent.value = '30';
-      structureData(inputData);
-      loadingPercent.value = '100';
-      isLoading(false);
+      structureInputData();
     }).catchError(handleError);
   }
 
@@ -38,19 +37,20 @@ class DataController extends GetxController with ErrorController {
     _url = (prefs.getString('URL') ?? '');
     isSending(true);
 
-    OutputDataList outputData = OutputDataList(outputData: OutputData(id: '345334534', result: Result(steps: [Steps(y: '1', x: '2'), Steps(y: '4', x: '5')], path: '123')));
-    var gjhk = outputData.toJson();
-
-    String json = jsonEncode(gjhk);
+    structureOutputData();
+    String json = jsonEncode(outputData);
 
     _httpClient = HttpClient();
     await _httpClient.post(_url, json).then((value) {
-      isSending(false);
+      Get.toNamed('/result');
     }).catchError(handleError);
+
+    isSending(false);
   }
 
-  Future<void> structureData(InputData inputData) async {
+  Future<void> structureInputData() async {
 
+    loadingPercent.value = 0.3;
     List<Data> data = inputData.data;
     dataBestWay = [];
 
@@ -64,14 +64,44 @@ class DataController extends GetxController with ErrorController {
       List<Point> endPointList = [];
       List<List<Point>> bestWayList = [bestWay];
 
+      sortToPrewiev() {
+        List<Point> _previewList = [];
+        int dataListLength = data[i].dataList.length;
+        int rowCount = sqrt(dataListLength).toInt();
+        int x = 0;
+        int y = 0;
+        int counter = 1;
+        for (int k = 0; k < dataListLength; k++) {
+          _previewList.add(Point(x: x, y: y));
+
+          if ((k + 1) / counter == rowCount){
+            x = 0;
+          } else {
+            x++;
+          }
+
+          if ((k + 1) == rowCount * counter){
+            y++;
+          }
+
+          if ( (k + 1) % rowCount == 0){
+            counter++;
+          }
+        }
+        previewList.add(_previewList);
+      }
+      sortToPrewiev();
+
       int moveX = rvtableXY[endPoint]!.x > rvtableXY[startPoint]!.x ? 1
                 : rvtableXY[endPoint]!.x == rvtableXY[startPoint]!.x ? 0 : -1;
 
       int moveY = rvtableXY[endPoint]!.y > rvtableXY[startPoint]!.y ? 1
                 : rvtableXY[endPoint]!.y == rvtableXY[startPoint]!.y ? 0 : -1;
 
-      var percent = 60/(data.length+i);
-      loadingPercent.value = '${percent.ceil()}';
+      //Future.delayed(const Duration(milliseconds: 5000), () async {
+        var percent = 60 / (data.length + i);
+        loadingPercent.value = loadingPercent.value + percent/100;
+      //});
       findBestWay(x, y, currentBestWay, tempBestWayList) {
         TablePoint currentTablePoint = TablePoint(x: x, y: y);
         Point? currentPoint = tableXY[currentTablePoint];
@@ -95,9 +125,9 @@ class DataController extends GetxController with ErrorController {
         List<Point> currentBestWay = bestWayList[n];
         TablePoint tablePoint = rvtableXY[currentPoint]!;
 
-        findBestWay(tablePoint.x + moveX, tablePoint.y, currentBestWay, tempBestWayList); //Try X
-        findBestWay(tablePoint.x, tablePoint.y + moveY, currentBestWay, tempBestWayList); //Try Y
-        findBestWay(tablePoint.x + moveX, tablePoint.y + moveY, currentBestWay, tempBestWayList); //Try XY
+        findBestWay(tablePoint.x + moveX, tablePoint.y, currentBestWay, tempBestWayList);
+        findBestWay(tablePoint.x, tablePoint.y + moveY, currentBestWay, tempBestWayList);
+        findBestWay(tablePoint.x + moveX, tablePoint.y + moveY, currentBestWay, tempBestWayList);
       }
 
       bestWayList = tempBestWayList;
@@ -110,8 +140,31 @@ class DataController extends GetxController with ErrorController {
         }
       }
     }
-
-
+    loadingPercent.value = 1.0;
+    isLoading(false);
+    isSending(false);
   }
 
+  Future<void> structureOutputData() async {
+
+    List<Data> data = inputData.data;
+
+    for (int i = 0; i < data.length; i++) {
+      List<Steps> stepsList = [];
+      for (int f = 0; f < dataBestWay[i].length; f++) {
+        stepsList.add(Steps(x: dataBestWay[i][f].x.toString(), y: dataBestWay[i][f].y.toString()));
+      }
+      Result result = Result(steps: stepsList, path: itemsToString(dataBestWay[i]));
+      outputData.add(OutputData(id: data[i].id, result: result));
+    }
+
+  }
+}
+
+itemsToString(List items) {
+  String value = '';
+  for (int m = 0; m < items.length; m++) {
+    value =  '$value${value != '' ?  '->' : ''}(${items[m].value})';
+  }
+  return value;
 }

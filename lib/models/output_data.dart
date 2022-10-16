@@ -1,16 +1,8 @@
 class OutputDataList {
+  final OutputData outputData;
   OutputDataList({
     required this.outputData,
   });
-
-  late final OutputData outputData;
-
-  List<dynamic> toJson() {
-    final data = [];
-    data.add(outputData);
-    return data;
-  }
-
 }
 
 class OutputData {

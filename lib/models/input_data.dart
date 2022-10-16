@@ -57,7 +57,7 @@ class Data {
         tableXY[newTablePoint] = newPoint;
         rvtableXY[newPoint] = newTablePoint;
         dataList.add(newPoint);
-        if (field[m][n] == 'X') {
+        if (field[n][m] == 'X') {
           exclusionList.add(newPoint);
         }
         counterY--;

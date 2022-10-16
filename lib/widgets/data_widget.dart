@@ -2,11 +2,14 @@
 import 'package:flutter/material.dart';
 
 Widget dataWidget(List items) {
-  return Container(
-    alignment: Alignment.center,
-    child: Text(
-      itemsToString(items),
-      style: const TextStyle(fontSize: 20),
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Container(
+      alignment: Alignment.center,
+      child: Text(
+        itemsToString(items),
+        style: const TextStyle(fontSize: 25),
+      ),
     ),
   );
 }

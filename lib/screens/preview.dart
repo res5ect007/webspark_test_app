@@ -1,4 +1,4 @@
-
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/data_controller.dart';
@@ -25,7 +25,7 @@ class PreviewScreen extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             return
               pointWidget(
-                  data.dataList[index],
+                  dataController.previewList[dataController.selectedDataList][index],
                   data.exclusionList,
                   data.start,
                   data.end,
@@ -33,7 +33,7 @@ class PreviewScreen extends StatelessWidget {
               );
           },
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
+            crossAxisCount: sqrt(dataListLength).toInt(),
           ),
         ),
       );

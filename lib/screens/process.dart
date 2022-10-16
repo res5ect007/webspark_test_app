@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../controllers/data_controller.dart';
 
 class ProcessScreen extends StatefulWidget {
@@ -15,64 +16,69 @@ class _ProcessScreenState extends State<ProcessScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: const Text('Process screen'),
-          leading: IconButton(
-            onPressed: () => Get.back(),
-            icon: const Icon(Icons.arrow_back),
-          )),
-      body: Obx(() {
-        return Padding(
+        appBar: AppBar(
+            title: const Text('Process screen'),
+            leading: IconButton(
+              onPressed: () => Get.back(),
+              icon: const Icon(Icons.arrow_back),
+            )),
+        body: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Column(
-            //crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SizedBox(),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: Column(
-                  //crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [ dataController.isLoading.isTrue ? const Text(
-                      'Data is calculating...', style: TextStyle(fontSize: 20)) :
-                    const Text(
+          child: Obx(() {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 10),
+                  child: Center(
+                    child: Column(
+                      children: [ dataController.isLoading.isTrue ? const Text(
+                          'Data is calculating...', style: TextStyle(
+                          fontSize: 20), textAlign: TextAlign.center) :
+                      const Text(
                         'All calculations has finished, you can send your results to server',
-                        style: TextStyle(fontSize: 17)),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10, bottom: 10),
-                      child: Text('${dataController.loadingPercent.value}%', style: const TextStyle(fontSize: 20)),
-                    )
-                  ],
-                ),
-              ),
-              // const Spacer(),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child:
-                dataController.isLoading.isTrue ? const SizedBox() :
-                TextButton(
-                  onPressed: dataController.isSending.isTrue ? null : () {
-                    //dataController.sendData();
-                    Get.toNamed('/result');
-                  },
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          Colors.blue)
-                  ),
-                  child: const Text(
-                    'Send results to server',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600, color: Colors.white),
+                        style: TextStyle(fontSize: 17),
+                        textAlign: TextAlign.center,
+                      ),
+                        CircularPercentIndicator(
+                          radius: 70,
+                          lineWidth: 5,
+                          percent: dataController.loadingPercent.value,
+                          progressColor: Colors.blueAccent,
+                          backgroundColor: Colors.blueAccent.shade100,
+                          circularStrokeCap: CircularStrokeCap.round,
+                          center: Text('${dataController.loadingPercent.value *
+                              100}%', style: const TextStyle(fontSize: 22),),
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              )
-            ],
-          ),
-        );
-      }),
+                // const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child:
+                  dataController.isLoading.isTrue ? const SizedBox() :
+                  TextButton(
+                    onPressed: dataController.isSending.isTrue ? null : () {
+                      dataController.sendData();
+                    },
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.blue)
+                    ),
+                    child: const Text(
+                      'Send results to server',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600, color: Colors.white),
+                    ),
+                  ),
+                )
+              ],
+            );
+          }),
+        )
     );
   }
 }
