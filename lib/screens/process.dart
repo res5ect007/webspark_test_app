@@ -41,15 +41,18 @@ class _ProcessScreenState extends State<ProcessScreen> {
                         style: TextStyle(fontSize: 17),
                         textAlign: TextAlign.center,
                       ),
-                        CircularPercentIndicator(
-                          radius: 70,
-                          lineWidth: 5,
-                          percent: dataController.loadingPercent.value,
-                          progressColor: Colors.blueAccent,
-                          backgroundColor: Colors.blueAccent.shade100,
-                          circularStrokeCap: CircularStrokeCap.round,
-                          center: Text('${dataController.loadingPercent.value *
-                              100}%', style: const TextStyle(fontSize: 22),),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CircularPercentIndicator(
+                                radius: 70,
+                                lineWidth: 5,
+                                percent: dataController.loadingPercent.value,
+                                progressColor: Colors.blue,
+                                backgroundColor: Colors.blue.shade100,
+                                circularStrokeCap: CircularStrokeCap.round,
+                                center: Text('${dataController.loadingPercent.value *
+                                    100}%', style: const TextStyle(fontSize: 22),),
+                              ),
                         )
                       ],
                     ),

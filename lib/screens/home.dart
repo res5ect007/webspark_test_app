@@ -57,8 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () async {
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setString('URL', urlController.text.trim());
-                  dataController.fetchData();
                   Get.toNamed('/process');
+                  dataController.fetchData();
                 },
             style:  ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(Colors.blue)
