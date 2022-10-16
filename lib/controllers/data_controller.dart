@@ -26,8 +26,9 @@ class DataController extends GetxController with ErrorController {
     loadingPercent.value = 0.0;
 
     _httpClient = HttpClient();
-    await _httpClient.get(_url).then((value) {
+    await _httpClient.get(_url).then((value) async {
       inputData = InputData.fromJson(jsonDecode(value));
+      Get.toNamed('/process');
       structureInputData();
     }).catchError(handleError);
   }
@@ -98,10 +99,10 @@ class DataController extends GetxController with ErrorController {
       int moveY = rvtableXY[endPoint]!.y > rvtableXY[startPoint]!.y ? 1
                 : rvtableXY[endPoint]!.y == rvtableXY[startPoint]!.y ? 0 : -1;
 
-      //Future.delayed(const Duration(milliseconds: 5000), () async {
-        var percent = 60 / (data.length + i);
-        loadingPercent.value = loadingPercent.value + percent/100;
-      //});
+
+      var percent = 60 / (data.length + i);
+      loadingPercent.value = loadingPercent.value + percent/100;
+
       findBestWay(x, y, currentBestWay, tempBestWayList) {
         TablePoint currentTablePoint = TablePoint(x: x, y: y);
         Point? currentPoint = tableXY[currentTablePoint];
