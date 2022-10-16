@@ -1,3 +1,18 @@
+class OutputDataList {
+  OutputDataList({
+    required this.outputData,
+  });
+
+  late final OutputData outputData;
+
+  List<dynamic> toJson() {
+    final data = [];
+    data.add(outputData);
+    return data;
+  }
+
+}
+
 class OutputData {
   OutputData({
     required this.id,
@@ -13,6 +28,7 @@ class OutputData {
     data['result'] = result.toJson();
     return data;
   }
+
 }
 
 class Result {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-Widget pointWidget(point, exclusionDataList, startPoint, endPoint, bestWayList) {
-  Color pointBackgroundColor = getPointBackgroundColor(point, exclusionDataList, startPoint, endPoint, bestWayList);
-  Color pointFontColor = getPointFontColor(point, exclusionDataList, startPoint, endPoint, bestWayList);
+Widget pointWidget(point, exclusionList, startPoint, endPoint, dataBestWay) {
+  Color pointBackgroundColor = getPointBackgroundColor(point, exclusionList, startPoint, endPoint, dataBestWay);
+  Color pointFontColor = getPointFontColor(point, exclusionList, startPoint, endPoint, dataBestWay);
   return Container(
     alignment: Alignment.center,
     decoration: BoxDecoration(
@@ -10,30 +10,29 @@ Widget pointWidget(point, exclusionDataList, startPoint, endPoint, bestWayList) 
       color: pointBackgroundColor
     ),
     child: Text(
-      '$point',
+      '${point.value}',
       style: TextStyle(fontSize: 20, color: pointFontColor,
     ),
   )
   );
 }
 
-getPointFontColor(point, exclusionDataList, startPoint, endPoint, bestWayList) {
-  if (exclusionDataList.contains(point) |
-      bestWayList.contains(point.toString())) {
+getPointFontColor(point, exclusionList, startPoint, endPoint, bestWayList) {
+  if (exclusionList.contains(point) | bestWayList.contains(point)) {
     return hexToColor('#FFFFFF');
   } else {
     return hexToColor('#000000');
   }
 }
 
-getPointBackgroundColor(point, exclusionDataList, startPoint, endPoint, bestWayList) {
-  if (exclusionDataList.contains(point)) {
+getPointBackgroundColor(point, exclusionList, startPoint, endPoint, bestWayList) {
+  if (exclusionList.contains(point)) {
    return hexToColor('#000000');
-  } else if (startPoint.contains(point)) {
+  } else if (startPoint == point) {
     return hexToColor('#64FFDA');
-  } else if (endPoint.contains(point)) {
+  } else if (endPoint == point) {
     return hexToColor('#009688');
-  } else if (bestWayList.contains(point.toString())) {
+  } else if (bestWayList.contains(point)) {
     return hexToColor('#4CAF50');
   } else {
     return hexToColor('#FFFFFF');
@@ -42,4 +41,12 @@ getPointBackgroundColor(point, exclusionDataList, startPoint, endPoint, bestWayL
 
 Color hexToColor(String hexString, {String alphaChannel = 'FF'}) {
   return Color(int.parse(hexString.replaceFirst('#', '0x$alphaChannel')));
+}
+
+itemsToString(List items) {
+  String value = '';
+  for (int m = 0; m < items.length; m++) {
+    value =  '$value${value != '' ?  '->' : ''}(${items[m].value})';
+  }
+  return value;
 }

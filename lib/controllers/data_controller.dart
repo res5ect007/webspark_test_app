@@ -11,14 +11,10 @@ class DataController extends GetxController with ErrorController {
   late HttpClient _httpClient;
   late InputData inputData;
   late OutputData outputData;
+  late List<List<Point>> dataBestWay;
   var isLoading = false.obs;
   var loadingPercent = ''.obs;
   var isSending = false.obs;
-  late List dataList = [];
-  late List startDataPoints = [];
-  late List endDataPoints = [];
-  late List exclusionDataList = [];
-  late List bestWayList = [];
   late int selectedDataList = 0.obs as int;
 
   Future<void> fetchData() async {
@@ -30,6 +26,7 @@ class DataController extends GetxController with ErrorController {
     _httpClient = HttpClient();
     await _httpClient.get(_url).then((value) {
       inputData = InputData.fromJson(jsonDecode(value));
+      loadingPercent.value = '30';
       structureData(inputData);
       loadingPercent.value = '100';
       isLoading(false);
@@ -41,116 +38,80 @@ class DataController extends GetxController with ErrorController {
     _url = (prefs.getString('URL') ?? '');
     isSending(true);
 
-   // outputData = OutputData.toJson(jsonDecode(value)) as OutputData;
+    OutputDataList outputData = OutputDataList(outputData: OutputData(id: '345334534', result: Result(steps: [Steps(y: '1', x: '2'), Steps(y: '4', x: '5')], path: '123')));
+    var gjhk = outputData.toJson();
 
-    // _httpClient = HttpClient();
-    // await _httpClient.post(_url, outputData).then((value) {
-    //
-    //   isSending(false);
-    // }).catchError(handleError);
+    String json = jsonEncode(gjhk);
+
+    _httpClient = HttpClient();
+    await _httpClient.post(_url, json).then((value) {
+      isSending(false);
+    }).catchError(handleError);
   }
 
   Future<void> structureData(InputData inputData) async {
-    int dataSize = inputData.data.length;
-    List outputData = [];
 
-    for (int i = 0; i < dataSize; i++) {
+    List<Data> data = inputData.data;
+    dataBestWay = [];
 
-      int tableSize = inputData.data[i].field.length;
-      List tableList = [];
-      List startPoint = [];
-      List endPoint = [];
-      List exclusionList = [];
+    for (int i = 0; i < data.length; i++) {
+      Point startPoint = data[i].start;
+      Point endPoint   = data[i].end;
+      List<Point> exclusionList = data[i].exclusionList;
+      Map<TablePoint, Point> tableXY = data[i].tableXY;
+      Map<Point, TablePoint> rvtableXY = data[i].rvtableXY;
+      List<Point> bestWay = [startPoint];
+      List<Point> endPointList = [];
+      List<List<Point>> bestWayList = [bestWay];
 
-      startPoint.add(inputData.data[i].start.x + inputData.data[i].start.y / 10);
-      endPoint.add(inputData.data[i].end.x + inputData.data[i].end.y / 10);
+      int moveX = rvtableXY[endPoint]!.x > rvtableXY[startPoint]!.x ? 1
+                : rvtableXY[endPoint]!.x == rvtableXY[startPoint]!.x ? 0 : -1;
 
-      for (int n = 0; n < tableSize; n++) {
+      int moveY = rvtableXY[endPoint]!.y > rvtableXY[startPoint]!.y ? 1
+                : rvtableXY[endPoint]!.y == rvtableXY[startPoint]!.y ? 0 : -1;
 
-        int stringLenth = inputData.data[i].field[n].length;
-        for (int m = 0; m < stringLenth; m++) {
-          var point = m + n/10;
-          tableList.add(point);
-
-          if (inputData.data[i].field[n][m] == 'X') {
-            exclusionList.add(point);
-          }
-        }
-      }
-      dataList.add(tableList);
-      startDataPoints.add(startPoint);
-      endDataPoints.add(endPoint);
-      exclusionDataList.add(exclusionList);
-    }
-    loadingPercent.value = '50';
-
-    //Find best way
-    dataSize = dataList.length;
-    for (int i = 0; i < dataSize; i++) {
-
-      List currentList = dataList[i];
-      //List currentExclusionList = exclusionDataList[i];
-      double currentStartPoint = startDataPoints[i][0];
-      double currentEndPoint = endDataPoints[i][0];
-
-      List availablePointList = [];
-      availablePointList.addAll(currentList);
-
-      //delete all not available points
-      for (int n = 0; n < exclusionDataList[i].length; n++) {
-        availablePointList.remove(exclusionDataList[i][n]);
-        availablePointList.remove(currentStartPoint);
-      }
-
-      // List currentWayAvailablePointList = [];
-      // currentWayAvailablePointList.addAll(availablePointList);
-
-      List<double> wayList = [0.9,  1.1, -1, -0.9,  -1.1, 0.1, 1, -0.1,];
-
-      String bestWay = '';
-      Map step = <String, int>{};
-      List steps = [];
-      List result = [];
-      bestWay = getWayFormated(currentStartPoint, bestWay);
-      //List bestWayList = [];
-
-      findBestResult(wayList, currentStartPoint, currentEndPoint) {
-
-        for (int m = 0; m < wayList.length - 1; m++) {
-          double stepPoint = currentStartPoint + wayList[m];
-          stepPoint = double.parse((stepPoint).toStringAsFixed(1));
-
-          if (availablePointList.contains(stepPoint)) {
-            availablePointList.remove(stepPoint);
-            bestWay = bestWay + getWayFormated(stepPoint, bestWay);
-
-            dynamic stepPointX = int.parse(stepPoint.toString().substring(0, 1));
-            dynamic stepPointY = int.parse(stepPoint.toString().substring(2, 3));
-            step = {'x': stepPointX, 'y': stepPointY};
-            steps.add(step);
-
-            if (currentEndPoint == stepPoint) {
-              //bestWayList.add(bestWay);
-              result.add({'steps': steps});
-              result.add({'path': bestWay});
-              availablePointList.clear();
-            } else {
-              findBestResult(wayList, stepPoint, currentEndPoint);
-            }
+      var percent = 60/(data.length+i);
+      loadingPercent.value = '${percent.ceil()}';
+      findBestWay(x, y, currentBestWay, tempBestWayList) {
+        TablePoint currentTablePoint = TablePoint(x: x, y: y);
+        Point? currentPoint = tableXY[currentTablePoint];
+        if (currentPoint != null) {
+          if (!exclusionList.contains(currentPoint)) {
+          List<Point> tempBestWay = [];
+          tempBestWay.addAll(currentBestWay);
+          tempBestWay.add(currentPoint);
+          tempBestWayList.add(tempBestWay);
+          endPointList.add(currentPoint);
           }
         }
       }
 
-      findBestResult(wayList, currentStartPoint, currentEndPoint);
-      bestWayList.add(bestWay);
-      loadingPercent.value = '75';
+      do {
 
-      outputData.add({
-          'id': inputData.data[i].id, 'result': result});
+        List<List<Point>> tempBestWayList = [];
+
+      for (int n = 0; n < bestWayList.length; n++){
+        Point currentPoint = bestWayList[n].last;
+        List<Point> currentBestWay = bestWayList[n];
+        TablePoint tablePoint = rvtableXY[currentPoint]!;
+
+        findBestWay(tablePoint.x + moveX, tablePoint.y, currentBestWay, tempBestWayList); //Try X
+        findBestWay(tablePoint.x, tablePoint.y + moveY, currentBestWay, tempBestWayList); //Try Y
+        findBestWay(tablePoint.x + moveX, tablePoint.y + moveY, currentBestWay, tempBestWayList); //Try XY
+      }
+
+      bestWayList = tempBestWayList;
+      }
+      while (!endPointList.contains(endPoint));
+
+      for (int m = 0; m < bestWayList.length; m++) {
+        if (bestWayList[m].contains(endPoint)) {
+          dataBestWay.add(bestWayList[m]);
+        }
+      }
     }
+
 
   }
 
 }
-
-getWayFormated(point,bestWay) => bestWay.isNotEmpty ? '->($point)' : '($point)';

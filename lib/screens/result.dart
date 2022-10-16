@@ -19,14 +19,16 @@ class ResultScreen extends StatelessWidget {
           )),
       body: ListView.separated(
         padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
-        itemCount: dataController.dataList.length,
+        itemCount: dataController.dataBestWay.length,
         itemBuilder: (BuildContext context, int index) {
+          List dataBestWay = dataController.dataBestWay[index];
           return GestureDetector(
               onTap: () {
                 dataController.selectedDataList = index;
                 Get.toNamed('/preview');
               },
-              child: dataWidget(dataController.bestWayList[index]));
+              child: dataWidget(dataBestWay)
+          );
         },
         separatorBuilder: (BuildContext context, int index) => const Divider(thickness: 1),
       ),
