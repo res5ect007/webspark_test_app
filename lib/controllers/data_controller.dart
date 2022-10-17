@@ -28,6 +28,7 @@ class DataController extends GetxController with ErrorController {
     _httpClient = HttpClient();
     await _httpClient.get(_url).then((value) async {
       inputData = InputData.fromJson(jsonDecode(value));
+      Get.toNamed('/process');
       structureInputData();
     }).catchError(handleError);
   }
