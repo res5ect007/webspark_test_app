@@ -37,7 +37,7 @@ class _ProcessScreenState extends State<ProcessScreen> {
                           'Data is calculating...', style: TextStyle(
                           fontSize: 20), textAlign: TextAlign.center) :
                       const Text(
-                        'All calculations has finished, you can send your results to server',
+                        'All calculations has finished, you can send your results to server ',
                         style: TextStyle(fontSize: 17),
                         textAlign: TextAlign.center,
                       ),
