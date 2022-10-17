@@ -55,6 +55,7 @@ class DataController extends GetxController with ErrorController {
     List<Data> data = inputData.data;
     dataBestWay = [];
 
+
     for (int i = 0; i < data.length; i++) {
       Point startPoint = data[i].start;
       Point endPoint   = data[i].end;
